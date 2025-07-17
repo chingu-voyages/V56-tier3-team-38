@@ -35,7 +35,7 @@ your repo access and to practice PR'ing with your team _before_ you start
 coding!
 
 - Johnny Kim: [GitHub](https://github.com/bellhwi) / [LinkedIn](https://www.linkedin.com/in/jonghwikim/)
-- Teammate name #2: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
+- Teammate name #2: [GitHub](https://github.com/LanceHam) / [LinkedIn] N/A
 
   ...
 
