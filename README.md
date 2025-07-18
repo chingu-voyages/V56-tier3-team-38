@@ -35,7 +35,7 @@ your repo access and to practice PR'ing with your team _before_ you start
 coding!
 
 - Tomoyuki Kishi #1: [GitHub](https://github.com/kishi1997) / [LinkedIn](https://linkedin.com/in/kishi-tomoyuki-287b39355/)
-- Teammate name #2: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
+- Johnny Kim #2: [GitHub](https://github.com/bellhwi) / [LinkedIn](https://www.linkedin.com/in/jonghwikim/)
 
   ...
 
