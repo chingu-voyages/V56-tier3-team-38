@@ -36,7 +36,5 @@ coding!
 
 - Tomoyuki Kishi #1: [GitHub](https://github.com/kishi1997) / [LinkedIn](https://linkedin.com/in/kishi-tomoyuki-287b39355/)
 - Johnny Kim #2: [GitHub](https://github.com/bellhwi) / [LinkedIn](https://www.linkedin.com/in/jonghwikim/)
-
-  ...
-
+- Lisa Chan #3: [GitHub](https://github.com/lc1715) / [LinkedIn](http://www.linkedin.com/in/lisa-chan14)
 - Teammate name #n: [GitHub](https://github.com/ghaccountname) / [LinkedIn](https://linkedin.com/in/liaccountname)
