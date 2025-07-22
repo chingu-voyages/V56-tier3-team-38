@@ -1,0 +1,8 @@
+node_modules
+.npm
+.next/cache
+*.log
+.DS_Store
+.next
+.env
+*.md
