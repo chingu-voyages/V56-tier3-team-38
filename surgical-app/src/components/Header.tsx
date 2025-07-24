@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -46,10 +47,10 @@ export default function Header() {
 
           {/* Responsive Nav */}
           <nav
-            className={`
-            ${open ? 'absolute top-10 left-2 bg-gray-200 p-4 rounded' : 'hidden'} 
-            flex flex-col gap-2 md:flex md:flex-row md:gap-8 md:justify-center md:items-center 
-          `}
+            className={cn(
+              'flex flex-col gap-2 md:flex-row md:gap-8 md:justify-center md:items-center',
+              open ? 'absolute top-10 left-2 bg-gray-200 p-4 rounded' : 'hidden'
+            )}
           >
             <Link href="/">Home</Link>
             <hr className="md:hidden border-gray-300" />
