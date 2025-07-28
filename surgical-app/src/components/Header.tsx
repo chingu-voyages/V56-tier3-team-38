@@ -48,8 +48,8 @@ export default function Header() {
           {/* Responsive Nav */}
           <nav
             className={cn(
-              'flex flex-col gap-2 md:flex-row md:gap-8 md:justify-center md:items-center',
-              open ? 'absolute top-10 left-2 bg-gray-200 p-4 rounded' : 'hidden'
+              'flex-col gap-2 hidden md:flex-row md:gap-8 md:justify-center md:items-center md:flex',
+              open && 'flex absolute top-10 left-2 bg-gray-200 p-4 rounded'
             )}
           >
             <Link href="/">Home</Link>

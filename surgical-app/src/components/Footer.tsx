@@ -7,28 +7,28 @@ import { IoLogoLinkedin } from 'react-icons/io';
 type Member = {
   name: string;
   github: string;
-  linkdin: string;
+  linkedin: string;
 };
 const memberInfo: Member[] = [
   {
     name: 'Tomoyuki Kishi',
     github: 'https://github.com/kishi1997',
-    linkdin: 'https://www.linkedin.com/in/kishi-tomoyuki-287b39355/',
+    linkedin: 'https://www.linkedin.com/in/kishi-tomoyuki-287b39355/',
   },
   {
     name: 'Johnny Kim',
     github: 'https://github.com/bellhwi',
-    linkdin: 'https://www.linkedin.com/in/jonghwikim/',
+    linkedin: 'https://www.linkedin.com/in/jonghwikim/',
   },
   {
     name: 'Lisa Chan',
     github: 'https://github.com/lc1715',
-    linkdin: 'http://www.linkedin.com/in/lisa-chan14',
+    linkedin: 'http://www.linkedin.com/in/lisa-chan14',
   },
   {
     name: 'Yi',
     github: 'https://github.com/yi-lin-1234',
-    linkdin: 'https://www.linkedin.com/in/liaccountname/',
+    linkedin: 'https://www.linkedin.com/in/liaccountname/',
   },
 ];
 export const Footer = () => {
@@ -51,7 +51,7 @@ export const Footer = () => {
                   <FaGithub className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
                 </Link>
                 <Link
-                  href={m.linkdin}
+                  href={m.linkedin}
                   target="_blank"
                   rel="noreferrer"
                   aria-label={`${m.name}'s LinkedIn`}
