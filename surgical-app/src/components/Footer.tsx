@@ -25,11 +25,6 @@ const memberInfo: Member[] = [
     github: 'https://github.com/lc1715',
     linkedin: 'http://www.linkedin.com/in/lisa-chan14',
   },
-  {
-    name: 'Yi',
-    github: 'https://github.com/yi-lin-1234',
-    linkedin: 'https://www.linkedin.com/in/liaccountname/',
-  },
 ];
 export const Footer = () => {
   return (
