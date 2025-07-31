@@ -14,6 +14,9 @@ export default function Header() {
   const isAdmin = true; // Admins can access all screens
   const isTeamMember = true; // Surgical team members can access everything except Patient Info
 
+  // Example patient ID (this should come from routing or context in a real app)
+  const patientId = '123';
+
   useEffect(() => {
     // Avoid hydration mismatch with locale-sensitive formatting
     const formatted = new Date().toLocaleDateString(undefined, {
@@ -52,13 +55,13 @@ export default function Header() {
               open && 'flex absolute top-10 left-2 bg-gray-200 p-4 rounded'
             )}
           >
-            <Link href="/">Home</Link>
+            <Link href="/status">Status</Link>
             <hr className="md:hidden border-gray-300" />
-            {isAdmin && <Link href="/patient-info">Patient Information</Link>}
+            {(isAdmin || isTeamMember) && <Link href={`/patient/${patientId}/edit`}>Edit</Link>}
             <hr className="md:hidden border-gray-300" />
-            {(isAdmin || isTeamMember) && <Link href="/status-update">Patient Status Update</Link>}
+            {isAdmin && <Link href={`/patient/${patientId}/info`}>Info</Link>}
             <hr className="md:hidden border-gray-300" />
-            <Link href="/status">Patient Status</Link>
+            {isAdmin && <Link href="/register">Register</Link>}
           </nav>
 
           {/* Right: Today's Date */}
