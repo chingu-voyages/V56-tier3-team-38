@@ -55,13 +55,15 @@ export default function Header() {
               open && 'flex absolute top-10 left-2 bg-gray-200 p-4 rounded'
             )}
           >
-            <Link href="/status">Status</Link>
+            <Link href="/">Home</Link>
             <hr className="md:hidden border-gray-300" />
-            {(isAdmin || isTeamMember) && <Link href={`/patient/${patientId}/edit`}>Edit</Link>}
+            <Link href="/patient">Patient Status</Link>
             <hr className="md:hidden border-gray-300" />
-            {isAdmin && <Link href={`/patient/${patientId}/info`}>Info</Link>}
+            {(isAdmin || isTeamMember) && (
+              <Link href={`/patient/status-update`}>Patient Status Update</Link>
+            )}
             <hr className="md:hidden border-gray-300" />
-            {isAdmin && <Link href="/register">Register</Link>}
+            {isAdmin && <Link href={`/patient/info`}>Patient Information</Link>}
           </nav>
 
           {/* Right: Today's Date */}
