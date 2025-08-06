@@ -70,6 +70,6 @@ export default function Header() {
           <div className="text-gray-600 text-sm">{today}</div>
         </div>
       </div>
-    </header>
+    </header >
   );
 }
