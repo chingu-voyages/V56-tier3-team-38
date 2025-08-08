@@ -24,17 +24,16 @@ interface Record {
   id: string;
   status: Status;
   name: string;
-  date: string;
 }
 
 // サンプルデータ
 const records: Record[] = [
-  { id: 'FIG123', status: 'Checked In', name: 'John Smith', date: 'Dec 5' },
-  { id: 'FIG123', status: 'In-progress', name: 'John Smith', date: 'Dec 5' },
-  { id: 'FIG123', status: 'Pre-Procedure', name: 'John Smith', date: 'Dec 5' },
-  { id: 'FIG123', status: 'Checked In', name: 'John Smith', date: 'Dec 5' },
-  { id: 'FIG123', status: 'In-progress', name: 'John Smith', date: 'Dec 5' },
-  { id: 'FIG123', status: 'Pre-Procedure', name: 'John Smith', date: 'Dec 5' },
+  { id: 'FIG123', status: 'Checked In', name: 'John Smith' },
+  { id: 'FIG123', status: 'In-progress', name: 'John Smith' },
+  { id: 'FIG123', status: 'Pre-Procedure', name: 'John Smith' },
+  { id: 'FIG123', status: 'Checked In', name: 'John Smith' },
+  { id: 'FIG123', status: 'In-progress', name: 'John Smith' },
+  { id: 'FIG123', status: 'Pre-Procedure', name: 'John Smith' },
 ];
 
 // ステータスに応じたBadgeのスタイルを返すヘルパーオブジェクト
@@ -47,14 +46,13 @@ const statusStyles: { [key in Status]: string } = {
 export function StatusTable() {
   return (
     <div className="w-full max-w-full overflow-x-auto pb-8 px-8">
-      <div className="border rounded-lg min-w-[600px] max-w-[1000px] mx-auto">
+      <div className="border rounded-lg max-w-[640px] mx-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px] pl-4 text-xs sm:text-sm">ID</TableHead>
+              <TableHead className="w-[80px] sm:w-[100px] pl-4 text-xs sm:text-sm">ID</TableHead>
               <TableHead className="text-xs sm:text-sm">STATUS</TableHead>
-              <TableHead className="text-xs sm:text-sm">Name</TableHead>
-              <TableHead className="text-right pr-4 text-xs sm:text-sm">Date</TableHead>
+              <TableHead className="text-xs sm:text-sm">NAME</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,7 +67,6 @@ export function StatusTable() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-left text-xs sm:text-sm">{record.name}</TableCell>
-                <TableCell className="text-right text-xs pr-4">{record.date}</TableCell>
               </TableRow>
             ))}
           </TableBody>
