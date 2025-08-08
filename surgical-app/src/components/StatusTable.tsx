@@ -45,7 +45,7 @@ const statusStyles: { [key in Status]: string } = {
 
 export function StatusTable() {
   return (
-    <div className="w-full max-w-full overflow-x-auto pb-8 px-8">
+    <div className="w-full pb-8 px-8">
       <div className="border rounded-lg max-w-[640px] mx-auto">
         <Table>
           <TableHeader>
