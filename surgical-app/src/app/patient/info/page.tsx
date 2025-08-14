@@ -21,48 +21,62 @@ export default function PatientInfo() {
         email: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     // Update formData state and show changes in input fields
     function handleChange(evt: React.ChangeEvent<HTMLInputElement>): void {
         let { name, value } = evt.target;
         setFormData((formData) => ({ ...formData, [name]: value }));
         setError('');
+        setSuccess('');
     }
 
     function handleCancel(): void {
         router.push('/');
     }
 
-    // Handles add patient info form submission
+    // Handles add patient data form submission
     async function handleAddPatient(evt: React.FormEvent) {
         evt.preventDefault();
         if (!formData.first_name || !formData.last_name) {
-            setError('add');
+            setError('First Name and Last Name are required');
+            return;
+        } else if (formData.id) {
+            setError('Patient Number is not required when adding patient information')
             return;
         }
 
         try {
             const resp = await createPatient(formData);
-            console.log('resp=', resp)
-            setFormData({ ...resp })
-        } catch (err) {
+            setSuccess(`${resp.first_name} ${resp.last_name} was successfully added. Patient Number is ${resp.id}.`)
+            setFormData((formData) => ({ ...formData, id: resp.id }))
+        } catch (err: unknown) {
             console.log('err:', err);
+            setError('An error occurred. Please try again.');
         }
     }
 
-    // Handles update patient info form submission
+    // Handles update patient data form submission
     async function handleUpdatePatient(evt: React.FormEvent) {
         evt.preventDefault();
         if (!formData.id) {
-            setError('update');
+            setError('Patient Number is required when updating patient information');
             return;
         }
 
         try {
-            const resp = await updatePatient(formData.id, formData);
-            console.log('resp=', resp)
-        } catch (err) {
-            console.log('err:', err);
+            await updatePatient(formData.id, formData);
+            setSuccess('Patient information was successfully updated')
+        } catch (err: unknown) {
+            console.log('err:', err)
+            const error = err as { message?: string; details?: string };
+
+            if (error.details === 'The result contains 0 rows') {
+                setError('Patient Number is incorrect. Please try again.');
+                return;
+            } else {
+                setError('An error occurred. Please try again.')
+            }
         }
     }
 
@@ -177,8 +191,8 @@ export default function PatientInfo() {
                 </div>
             </form>
 
-            {error === 'add' ? <p className="text-red-500 font-bold">First Name and Last Name are required</p> : null}
-            {error === 'update' ? <p className="text-red-500 font-bold">Patient Number is required</p> : null}
+            {error ? <p className="text-red-500 font-bold">{error}</p> : ''}
+            {success ? <p className="text-green-600 font-bold">{success}</p> : ''}
         </div >
     )
 };
