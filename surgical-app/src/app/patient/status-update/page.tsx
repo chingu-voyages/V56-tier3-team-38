@@ -99,13 +99,6 @@ export default function StatusUpdate() {
     }
   };
 
-  const handleCancel = () => {
-    // Just clear selection and messages (keep the loaded patient)
-    setNewStatus('');
-    setError('');
-    setSuccess('');
-  };
-
   const disableUpdate =
     !patient || !newStatus || (patient && newStatus === patient.status) || isUpdating;
 
@@ -212,12 +205,9 @@ export default function StatusUpdate() {
             </div>
 
             {/* Controls */}
-            <div className="flex justify-between pt-4">
-              <Button variant="secondary" onClick={handleCancel} disabled={isUpdating}>
-                Cancel
-              </Button>
+            <div className="flex justify-center pt-4">
               <Button onClick={handleUpdate} disabled={disableUpdate}>
-                {isUpdating ? 'Updating...' : 'Add / Update'}
+                {isUpdating ? 'Updating...' : 'Update'}
               </Button>
             </div>
           </>
