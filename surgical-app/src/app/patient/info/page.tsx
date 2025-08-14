@@ -3,24 +3,26 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
+import { createPatient } from "@/services/patientService";
+import { updatePatient } from "@/services/patientService";
 
 
 export default function PatientInfo() {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        patientNum: '',
-        firstName: '',
-        lastName: '',
-        street: '',
+        id: '',
+        first_name: '',
+        last_name: '',
+        street_address: '',
         city: '',
         state: '',
         country: '',
         telephone: '',
-        contactEmail: ''
+        email: ''
     });
     const [error, setError] = useState('');
 
-
+    // Update formData state and show changes in input fields
     function handleChange(evt: React.ChangeEvent<HTMLInputElement>): void {
         let { name, value } = evt.target;
         setFormData((formData) => ({ ...formData, [name]: value }));
@@ -31,26 +33,36 @@ export default function PatientInfo() {
         router.push('/');
     }
 
-    // Handle add patient info request. 
-    // Function will be updated when backend is ready.
+    // Handles add patient info form submission
     async function handleAddPatient(evt: React.FormEvent) {
         evt.preventDefault();
-        const newFormData = { ...formData, patientNum: '' }
-        console.log('newFormData=', newFormData)
-        if (!newFormData.firstName || !newFormData.lastName) {
+        if (!formData.first_name || !formData.last_name) {
             setError('add');
             return;
         }
+
+        try {
+            const resp = await createPatient(formData);
+            console.log('resp=', resp)
+            setFormData({ ...resp })
+        } catch (err) {
+            console.log('err:', err);
+        }
     }
 
-    // Handle update patient info request. 
-    // Function will be updated when backend is ready.
+    // Handles update patient info form submission
     async function handleUpdatePatient(evt: React.FormEvent) {
         evt.preventDefault();
-        console.log('formData=', formData)
-        if (!formData.patientNum) {
+        if (!formData.id) {
             setError('update');
             return;
+        }
+
+        try {
+            const resp = await updatePatient(formData.id, formData);
+            console.log('resp=', resp)
+        } catch (err) {
+            console.log('err:', err);
         }
     }
 
@@ -60,45 +72,45 @@ export default function PatientInfo() {
 
             <form className="flex flex-col justify-center">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="patientNum" className="w-full sm:w-32 text-left font-bold py-1">Patient No:</label>
+                    <label htmlFor="id" className="w-full sm:w-32 text-left font-bold py-1">Patient No:</label>
                     <input
                         type='text'
-                        name='patientNum'
-                        id='patientNum'
-                        value={formData.patientNum}
+                        name='id'
+                        id='id'
+                        value={formData.id}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="firstName" className="w-full sm:w-32 text-left font-bold">First Name:</label>
+                    <label htmlFor="first_name" className="w-full sm:w-32 text-left font-bold">First Name:</label>
                     <input
                         type='text'
-                        name='firstName'
-                        id='firstName'
-                        value={formData.firstName}
+                        name='first_name'
+                        id='first_name'
+                        value={formData.first_name}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="lastName" className="w-full sm:w-32 text-left font-bold">Last Name:</label>
+                    <label htmlFor="last_name" className="w-full sm:w-32 text-left font-bold">Last Name:</label>
                     <input
                         type='text'
-                        name='lastName'
-                        id='lastName'
-                        value={formData.lastName}
+                        name='last_name'
+                        id='last_name'
+                        value={formData.last_name}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="street" className="w-full sm:w-32 text-left font-bold">Street:</label>
+                    <label htmlFor="street_address" className="w-full sm:w-32 text-left font-bold">Street:</label>
                     <input
                         type='text'
-                        name='street'
-                        id='street'
-                        value={formData.street}
+                        name='street_address'
+                        id='street_address'
+                        value={formData.street_address}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
@@ -148,12 +160,12 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="contactEmail" className="w-full sm:w-32 text-left font-bold">Contact Email:</label>
+                    <label htmlFor="email" className="w-full sm:w-32 text-left font-bold">Contact Email:</label>
                     <input
                         type='text'
-                        name='contactEmail'
-                        id='contactEmail'
-                        value={formData.contactEmail}
+                        name='email'
+                        id='email'
+                        value={formData.email}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
