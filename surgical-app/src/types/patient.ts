@@ -9,7 +9,6 @@ export type PatientStatus =
   | 'Dismissal';
 
 // Defines the allowed and expected progression order of statuses.
-// Code that validates "only move to previous or next" depends on this array.
 export const STATUS_ORDER: PatientStatus[] = [
   'Checked In',
   'Pre-Procedure',
@@ -20,8 +19,18 @@ export const STATUS_ORDER: PatientStatus[] = [
   'Dismissal',
 ];
 
-// Fields collected from the Patient Information form.
-// These are the patient's personal/contact details and do NOT include id or status.
+// For UI labels (keep in one place for easy changes later).
+export const STATUS_LABELS: Record<PatientStatus, string> = {
+  'Checked In': 'Checked In',
+  'Pre-Procedure': 'Pre-Procedure',
+  'In-Progress': 'In-Progress',
+  Closing: 'Closing',
+  Recovery: 'Recovery',
+  Complete: 'Complete',
+  Dismissal: 'Dismissal',
+};
+
+// Personal/contact fields collected on the Patient Information form.
 export interface PatientBase {
   first_name: string;
   last_name: string;
@@ -33,21 +42,42 @@ export interface PatientBase {
   email: string;
 }
 
-// Full patient record as stored in the database.
-// - id is the 6-character patient number (letters/numbers only).
-// - status is the patient's current status.
-// - created_at is added by the DB.
+// Full row shape in DB.
 export interface Patient extends PatientBase {
-  id: string; // 6-char patient number
-  status: PatientStatus;
-  created_at?: string;
+  id: string; // 6-character patient number (A–Z, a–z, 0–9)
+  status: PatientStatus; // current status
+  created_at?: string; // optional if your table adds it
 }
 
-// Shape of data accepted when creating a patient via the form.
-// - We intentionally exclude id and status; those are assigned by the service layer.
+// Shape for creating a patient from the form (id/status are assigned elsewhere).
 export type PatientCreate = PatientBase;
 
-// Shape of data accepted when updating patient info (not status).
-// - All fields are optional because updates may be partial.
-// - id and status must NOT be updated here.
+// Shape for updating patient info (not status).
 export type PatientUpdate = Partial<PatientBase>;
+
+/* ---------------- Helpers ---------------- */
+
+// Get previous and next statuses for a given status.
+export function getNeighbors(status: PatientStatus) {
+  const i = STATUS_ORDER.indexOf(status);
+  return {
+    prev: i > 0 ? STATUS_ORDER[i - 1] : undefined,
+    next: i >= 0 && i < STATUS_ORDER.length - 1 ? STATUS_ORDER[i + 1] : undefined,
+  };
+}
+
+// Allowed choices according to the spec: only previous or next.
+export function getAllowedStatuses(current: PatientStatus) {
+  const { prev, next } = getNeighbors(current);
+  return [prev, next].filter(Boolean) as PatientStatus[];
+}
+
+// Validate patient number (exactly 6 alphanumeric characters).
+export function isValidPatientNumber(s: string) {
+  return /^[A-Za-z0-9]{6}$/.test((s || '').trim());
+}
+
+// Normalize patient number to uppercase (helps consistency in DB queries).
+export function normalizePatientNumber(s: string) {
+  return (s || '').trim().toUpperCase();
+}

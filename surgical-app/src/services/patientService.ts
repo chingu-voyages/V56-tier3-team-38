@@ -5,8 +5,11 @@ import {
   PatientCreate,
   PatientStatus,
   PatientUpdate,
-  STATUS_ORDER,
+  getAllowedStatuses,
+  normalizePatientNumber,
 } from '@/types/patient';
+
+const TABLE = 'patients';
 
 // -------------------- Utilities --------------------
 
@@ -80,23 +83,6 @@ async function generateSafePatientId(input: PatientCreate) {
   throw new Error('Failed to generate a safe unique patient number');
 }
 
-// Validates that the next status is either the immediate previous or immediate next
-// status in STATUS_ORDER. Skipping steps is not allowed. Reversing is allowed only
-// to the prior status.
-function assertNeighborTransition(current: PatientStatus, next: PatientStatus) {
-  const i = STATUS_ORDER.indexOf(current);
-  const j = STATUS_ORDER.indexOf(next);
-  if (i === -1 || j === -1) throw new Error('Invalid status');
-
-  // Only allow moving to indices i-1 or i+1, if they exist within bounds.
-  const allowed = [i - 1, i + 1].filter((k) => k >= 0 && k < STATUS_ORDER.length);
-  if (!allowed.includes(j)) {
-    throw new Error(
-      'Statuses may not be skipped. You can only move to the immediate prior or next status.'
-    );
-  }
-}
-
 // -------------------- CRUD --------------------
 
 // Creates a new patient record from form input.
@@ -136,33 +122,35 @@ export async function updatePatient(patientId: string, updates: PatientUpdate) {
   return data as Patient;
 }
 
-// Updates a patient's status with strict sequencing rules:
-// - You may move only to the immediate prior or next status.
-// - Skipping statuses is not allowed.
-// - Reversing is allowed only one step back.
-export async function updatePatientStatus(patientId: string, next: PatientStatus) {
-  // Read the current status to validate the requested transition.
-  const { data: currentList, error: readErr } = await supabase
-    .from('patients')
-    .select('id, status')
-    .eq('id', patientId)
-    .limit(1);
+// Update status with strict validation (only previous or next allowed).
+export async function updatePatientStatus(id: string, nextStatus: PatientStatus): Promise<void> {
+  const patient = await getPatientById(id);
+  if (!patient) throw new Error('No patient found for that number.');
 
-  if (readErr) throw readErr;
-  const current = currentList?.[0];
-  if (!current) throw new Error('Patient not found');
+  const allowed = getAllowedStatuses(patient.status);
+  if (!allowed.includes(nextStatus)) {
+    // Enforce the spec: can only move to the previous or next status.
+    throw new Error('Only the previous or the next status is allowed.');
+  }
 
-  assertNeighborTransition(current.status as PatientStatus, next);
+  const { error } = await supabase.from(TABLE).update({ status: nextStatus }).eq('id', patient.id); // use normalized id returned from DB
 
+  if (error) throw new Error(error.message);
+}
+
+// Fetch a patient by patient number (id).
+export async function getPatientById(id: string): Promise<Patient | null> {
+  const normalized = normalizePatientNumber(id);
   const { data, error } = await supabase
-    .from('patients')
-    .update({ status: next })
-    .eq('id', patientId)
-    .select()
-    .single();
+    .from(TABLE)
+    .select(
+      'id, first_name, last_name, street_address, city, state, country, telephone, email, status'
+    )
+    .eq('id', normalized)
+    .maybeSingle();
 
-  if (error) throw error;
-  return data as Patient;
+  if (error) throw new Error(error.message);
+  return (data as Patient) ?? null;
 }
 
 // Returns the minimal dataset for the public status board.
