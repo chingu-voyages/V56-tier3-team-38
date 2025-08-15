@@ -36,8 +36,15 @@ export default function PatientInfo() {
     }
 
     // Handles add patient data form submission
-    async function handleAddPatient(evt: React.FormEvent) {
+    async function handleAddPatient(evt: React.MouseEvent<HTMLButtonElement>) {
+        const form = evt.currentTarget.form as HTMLFormElement;
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         evt.preventDefault();
+
         if (!formData.first_name || !formData.last_name) {
             setError('First Name and Last Name are required');
             return;
@@ -57,8 +64,15 @@ export default function PatientInfo() {
     }
 
     // Handles update patient data form submission
-    async function handleUpdatePatient(evt: React.FormEvent) {
+    async function handleUpdatePatient(evt: React.MouseEvent<HTMLButtonElement>) {
+        const form = evt.currentTarget.form as HTMLFormElement;
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         evt.preventDefault();
+
         if (!formData.id) {
             setError('Patient Number is required when updating patient information');
             return;
@@ -86,7 +100,7 @@ export default function PatientInfo() {
 
             <form className="flex flex-col justify-center">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="id" className="w-full sm:w-32 text-left font-bold py-1">Patient No:</label>
+                    <label htmlFor="id" className="w-full sm:w-32 text-left font-bold py-1 md:mb-3">Patient No:</label>
                     <input
                         type='text'
                         name='id'
@@ -97,7 +111,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="first_name" className="w-full sm:w-32 text-left font-bold">First Name:</label>
+                    <label htmlFor="first_name" className="w-full sm:w-32 text-left font-bold md:mb-3">First Name:</label>
                     <input
                         type='text'
                         name='first_name'
@@ -108,7 +122,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="last_name" className="w-full sm:w-32 text-left font-bold">Last Name:</label>
+                    <label htmlFor="last_name" className="w-full sm:w-32 text-left font-bold md:mb-3">Last Name:</label>
                     <input
                         type='text'
                         name='last_name'
@@ -119,7 +133,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="street_address" className="w-full sm:w-32 text-left font-bold">Street:</label>
+                    <label htmlFor="street_address" className="w-full sm:w-32 text-left font-bold md:mb-3">Street:</label>
                     <input
                         type='text'
                         name='street_address'
@@ -130,7 +144,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="city" className="w-full sm:w-32 text-left font-bold">City:</label>
+                    <label htmlFor="city" className="w-full sm:w-32 text-left font-bold md:mb-3">City:</label>
                     <input
                         type='text'
                         name='city'
@@ -141,7 +155,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="state" className="w-full sm:w-32 text-left font-bold">State:</label>
+                    <label htmlFor="state" className="w-full sm:w-32 text-left font-bold md:mb-3">State:</label>
                     <input
                         type='text'
                         name='state'
@@ -152,7 +166,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="country" className="w-full sm:w-32 text-left font-bold">Country:</label>
+                    <label htmlFor="country" className="w-full sm:w-32 text-left font-bold md:mb-3">Country:</label>
                     <input
                         type='text'
                         name='country'
@@ -163,20 +177,22 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="telephone" className="w-full sm:w-32 text-left font-bold">Telephone:</label>
+                    <label htmlFor="telephone" className="w-full sm:w-32 text-left font-bold md:mb-3">Telephone:</label>
                     <input
-                        type='text'
+                        type='tel'
                         name='telephone'
                         id='telephone'
                         value={formData.telephone}
+                        pattern='[0-9]*'
+                        title='Please only enter numbers'
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="email" className="w-full sm:w-32 text-left font-bold">Contact Email:</label>
+                    <label htmlFor="email" className="w-full sm:w-32 text-left font-bold md:mb-3">Contact Email:</label>
                     <input
-                        type='text'
+                        type='email'
                         name='email'
                         id='email'
                         value={formData.email}
