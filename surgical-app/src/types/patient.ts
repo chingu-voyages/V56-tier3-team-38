@@ -30,6 +30,17 @@ export const STATUS_LABELS: Record<PatientStatus, string> = {
   Dismissal: 'Dismissal',
 };
 
+// Assign unique colors to each status.
+export const STATUS_COLORS: Record<PatientStatus, string> = {
+  'Checked In': '#1E90FF', // Dodger Blue
+  'Pre-Procedure': '#FFA500', // Orange
+  'In-Progress': '#FF4500', // OrangeRed
+  Closing: '#8A2BE2', // BlueViolet
+  Recovery: '#32CD32', // LimeGreen
+  Complete: '#2E8B57', // SeaGreen
+  Dismissal: '#696969', // DimGray
+};
+
 // Personal/contact fields collected on the Patient Information form.
 export interface PatientBase {
   first_name: string;
