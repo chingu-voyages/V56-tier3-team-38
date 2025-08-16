@@ -3,54 +3,94 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
+import { createPatient } from "@/services/patientService";
+import { updatePatient } from "@/services/patientService";
 
 
 export default function PatientInfo() {
     const router = useRouter();
     const [formData, setFormData] = useState({
-        patientNum: '',
-        firstName: '',
-        lastName: '',
-        street: '',
+        id: '',
+        first_name: '',
+        last_name: '',
+        street_address: '',
         city: '',
         state: '',
         country: '',
         telephone: '',
-        contactEmail: ''
+        email: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-
+    // Update formData state and show changes in input fields
     function handleChange(evt: React.ChangeEvent<HTMLInputElement>): void {
         let { name, value } = evt.target;
         setFormData((formData) => ({ ...formData, [name]: value }));
         setError('');
+        setSuccess('');
     }
 
     function handleCancel(): void {
         router.push('/');
     }
 
-    // Handle add patient info request. 
-    // Function will be updated when backend is ready.
-    async function handleAddPatient(evt: React.FormEvent) {
-        evt.preventDefault();
-        const newFormData = { ...formData, patientNum: '' }
-        console.log('newFormData=', newFormData)
-        if (!newFormData.firstName || !newFormData.lastName) {
-            setError('add');
+    // Handles add patient data form submission
+    async function handleAddPatient(evt: React.MouseEvent<HTMLButtonElement>) {
+        const form = evt.currentTarget.form as HTMLFormElement;
+        if (!form.checkValidity()) {
+            form.reportValidity();
             return;
+        }
+
+        evt.preventDefault();
+
+        if (!formData.first_name || !formData.last_name) {
+            setError('First Name and Last Name are required');
+            return;
+        } else if (formData.id) {
+            setError('Patient Number is not required when adding patient information')
+            return;
+        }
+
+        try {
+            const resp = await createPatient(formData);
+            setSuccess(`${resp.first_name} ${resp.last_name} was successfully added. Patient Number is ${resp.id}.`)
+            setFormData((formData) => ({ ...formData, id: resp.id }))
+        } catch (err: unknown) {
+            console.log('err:', err);
+            setError('An error occurred. Please try again.');
         }
     }
 
-    // Handle update patient info request. 
-    // Function will be updated when backend is ready.
-    async function handleUpdatePatient(evt: React.FormEvent) {
-        evt.preventDefault();
-        console.log('formData=', formData)
-        if (!formData.patientNum) {
-            setError('update');
+    // Handles update patient data form submission
+    async function handleUpdatePatient(evt: React.MouseEvent<HTMLButtonElement>) {
+        const form = evt.currentTarget.form as HTMLFormElement;
+        if (!form.checkValidity()) {
+            form.reportValidity();
             return;
+        }
+
+        evt.preventDefault();
+
+        if (!formData.id) {
+            setError('Patient Number is required when updating patient information');
+            return;
+        }
+
+        try {
+            await updatePatient(formData.id, formData);
+            setSuccess('Patient information was successfully updated')
+        } catch (err: unknown) {
+            console.log('err:', err)
+            const error = err as { message?: string; details?: string };
+
+            if (error.details === 'The result contains 0 rows') {
+                setError('Patient Number is incorrect. Please try again.');
+                return;
+            } else {
+                setError('An error occurred. Please try again.')
+            }
         }
     }
 
@@ -60,51 +100,51 @@ export default function PatientInfo() {
 
             <form className="flex flex-col justify-center">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="patientNum" className="w-full sm:w-32 text-left font-bold py-1">Patient No:</label>
+                    <label htmlFor="id" className="w-full sm:w-32 text-left font-bold py-1 md:mb-3">Patient No:</label>
                     <input
                         type='text'
-                        name='patientNum'
-                        id='patientNum'
-                        value={formData.patientNum}
+                        name='id'
+                        id='id'
+                        value={formData.id}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="firstName" className="w-full sm:w-32 text-left font-bold">First Name:</label>
+                    <label htmlFor="first_name" className="w-full sm:w-32 text-left font-bold md:mb-3">First Name:</label>
                     <input
                         type='text'
-                        name='firstName'
-                        id='firstName'
-                        value={formData.firstName}
+                        name='first_name'
+                        id='first_name'
+                        value={formData.first_name}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="lastName" className="w-full sm:w-32 text-left font-bold">Last Name:</label>
+                    <label htmlFor="last_name" className="w-full sm:w-32 text-left font-bold md:mb-3">Last Name:</label>
                     <input
                         type='text'
-                        name='lastName'
-                        id='lastName'
-                        value={formData.lastName}
+                        name='last_name'
+                        id='last_name'
+                        value={formData.last_name}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="street" className="w-full sm:w-32 text-left font-bold">Street:</label>
+                    <label htmlFor="street_address" className="w-full sm:w-32 text-left font-bold md:mb-3">Street:</label>
                     <input
                         type='text'
-                        name='street'
-                        id='street'
-                        value={formData.street}
+                        name='street_address'
+                        id='street_address'
+                        value={formData.street_address}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="city" className="w-full sm:w-32 text-left font-bold">City:</label>
+                    <label htmlFor="city" className="w-full sm:w-32 text-left font-bold md:mb-3">City:</label>
                     <input
                         type='text'
                         name='city'
@@ -115,7 +155,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="state" className="w-full sm:w-32 text-left font-bold">State:</label>
+                    <label htmlFor="state" className="w-full sm:w-32 text-left font-bold md:mb-3">State:</label>
                     <input
                         type='text'
                         name='state'
@@ -126,7 +166,7 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="country" className="w-full sm:w-32 text-left font-bold">Country:</label>
+                    <label htmlFor="country" className="w-full sm:w-32 text-left font-bold md:mb-3">Country:</label>
                     <input
                         type='text'
                         name='country'
@@ -137,23 +177,25 @@ export default function PatientInfo() {
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="telephone" className="w-full sm:w-32 text-left font-bold">Telephone:</label>
+                    <label htmlFor="telephone" className="w-full sm:w-32 text-left font-bold md:mb-3">Telephone:</label>
                     <input
-                        type='text'
+                        type='tel'
                         name='telephone'
                         id='telephone'
                         value={formData.telephone}
+                        pattern='[0-9]*'
+                        title='Please only enter numbers'
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="contactEmail" className="w-full sm:w-32 text-left font-bold">Contact Email:</label>
+                    <label htmlFor="email" className="w-full sm:w-32 text-left font-bold md:mb-3">Contact Email:</label>
                     <input
-                        type='text'
-                        name='contactEmail'
-                        id='contactEmail'
-                        value={formData.contactEmail}
+                        type='email'
+                        name='email'
+                        id='email'
+                        value={formData.email}
                         onChange={handleChange}
                         className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
                     />
@@ -165,8 +207,8 @@ export default function PatientInfo() {
                 </div>
             </form>
 
-            {error === 'add' ? <p className="text-red-500 font-bold">First Name and Last Name are required</p> : null}
-            {error === 'update' ? <p className="text-red-500 font-bold">Patient Number is required</p> : null}
+            {error ? <p className="text-red-500 font-bold">{error}</p> : ''}
+            {success ? <p className="text-green-600 font-bold">{success}</p> : ''}
         </div >
     )
 };
