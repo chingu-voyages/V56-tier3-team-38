@@ -1,214 +1,133 @@
-'use client'
+'use client';
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"
-import { createPatient } from "@/services/patientService";
-import { updatePatient } from "@/services/patientService";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { createPatient } from '@/services/patientService';
+import { updatePatient } from '@/services/patientService';
+import { toast } from 'sonner';
 
+const INITIAL_FORM = {
+  id: '',
+  first_name: '',
+  last_name: '',
+  street_address: '',
+  city: '',
+  state: '',
+  country: '',
+  telephone: '',
+  email: '',
+};
 
 export default function PatientInfo() {
-    const router = useRouter();
-    const [formData, setFormData] = useState({
-        id: '',
-        first_name: '',
-        last_name: '',
-        street_address: '',
-        city: '',
-        state: '',
-        country: '',
-        telephone: '',
-        email: ''
-    });
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+  const router = useRouter();
+  const [formData, setFormData] = useState(INITIAL_FORM);
+  // Update formData state and show changes in input fields
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
+    const { name, value } = e.target;
+    setFormData((formData) => ({ ...formData, [name]: value }));
+  }
 
-    // Update formData state and show changes in input fields
-    function handleChange(evt: React.ChangeEvent<HTMLInputElement>): void {
-        let { name, value } = evt.target;
-        setFormData((formData) => ({ ...formData, [name]: value }));
-        setError('');
-        setSuccess('');
+  function handleCancel(): void {
+    router.push('/');
+  }
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>, mode: 'add' | 'update') => {
+    const form = e.currentTarget.form as HTMLFormElement;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
     }
-
-    function handleCancel(): void {
-        router.push('/');
-    }
-
-    // Handles add patient data form submission
-    async function handleAddPatient(evt: React.MouseEvent<HTMLButtonElement>) {
-        const form = evt.currentTarget.form as HTMLFormElement;
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        evt.preventDefault();
-
+    e.preventDefault();
+    try {
+      if (mode === 'add') {
         if (!formData.first_name || !formData.last_name) {
-            setError('First Name and Last Name are required');
-            return;
-        } else if (formData.id) {
-            setError('Patient Number is not required when adding patient information')
-            return;
+          console.log('🚀 ~ handleSubmit ~ g:');
+          toast.error('First Name and Last Name are required');
+          return;
         }
-
-        try {
-            const resp = await createPatient(formData);
-            setSuccess(`${resp.first_name} ${resp.last_name} was successfully added. Patient Number is ${resp.id}.`)
-            setFormData((formData) => ({ ...formData, id: resp.id }))
-        } catch (err: unknown) {
-            console.log('err:', err);
-            setError('An error occurred. Please try again.');
+        if (formData.id) {
+          toast.error('Patient Number is not required when adding patient information');
+          return;
         }
-    }
-
-    // Handles update patient data form submission
-    async function handleUpdatePatient(evt: React.MouseEvent<HTMLButtonElement>) {
-        const form = evt.currentTarget.form as HTMLFormElement;
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
-
-        evt.preventDefault();
-
+        const resp = await createPatient(formData);
+        toast.success(`${resp.first_name} ${resp.last_name} was added. Patient Number: ${resp.id}`);
+        setFormData((formData) => ({ ...formData, id: resp.id }));
+      }
+      if (mode === 'update') {
         if (!formData.id) {
-            setError('Patient Number is required when updating patient information');
-            return;
+          toast.error('Patient Number is required when updating patient information');
+          return;
         }
-
-        try {
-            await updatePatient(formData.id, formData);
-            setSuccess('Patient information was successfully updated')
-        } catch (err: unknown) {
-            console.log('err:', err)
-            const error = err as { message?: string; details?: string };
-
-            if (error.details === 'The result contains 0 rows') {
-                setError('Patient Number is incorrect. Please try again.');
-                return;
-            } else {
-                setError('An error occurred. Please try again.')
-            }
-        }
+        await updatePatient(formData.id, formData);
+        toast.success('Patient information was successfully updated');
+      }
+    } catch (err: unknown) {
+      const error = err as { message?: string; details?: string };
+      if (error.details === 'The result contains 0 rows') {
+        toast.error('Patient Number is incorrect. Please try again.');
+      } else {
+        toast.error('An error occurred. Please try again.');
+      }
     }
+  };
 
-    return (
-        <div className='flex flex-col justify-center items-center p-6'>
-            <h2 className='text-2xl text-center font-semibold md:text-3xl my-9'>Add/Update Patient Information</h2>
+  return (
+    <div className="flex flex-col justify-center items-center p-6">
+      <h2 className="text-2xl text-center font-semibold md:text-3xl my-9">
+        Add/Update Patient Information
+      </h2>
+      <form className="flex flex-col justify-center">
+        {Object.entries({
+          id: 'Patient No:',
+          first_name: 'First Name:',
+          last_name: 'Last Name:',
+          street_address: 'Street:',
+          city: 'City:',
+          state: 'State:',
+          country: 'Country:',
+          telephone: 'Telephone:',
+          email: 'Contact Email:',
+        }).map(([key, label]) => (
+          <div key={key} className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
+            <label htmlFor={key} className="w-full sm:w-32 text-left font-bold md:mb-3">
+              {label}
+            </label>
+            <input
+              type={key === 'email' ? 'email' : key === 'telephone' ? 'tel' : 'text'}
+              name={key}
+              id={key}
+              value={formData[key as keyof typeof formData]}
+              onChange={handleChange}
+              className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
+              {...(key === 'telephone' && {
+                pattern: '[0-9]*',
+                title: 'Please only enter numbers',
+              })}
+            />
+          </div>
+        ))}
 
-            <form className="flex flex-col justify-center">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="id" className="w-full sm:w-32 text-left font-bold py-1 md:mb-3">Patient No:</label>
-                    <input
-                        type='text'
-                        name='id'
-                        id='id'
-                        value={formData.id}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="first_name" className="w-full sm:w-32 text-left font-bold md:mb-3">First Name:</label>
-                    <input
-                        type='text'
-                        name='first_name'
-                        id='first_name'
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="last_name" className="w-full sm:w-32 text-left font-bold md:mb-3">Last Name:</label>
-                    <input
-                        type='text'
-                        name='last_name'
-                        id='last_name'
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="street_address" className="w-full sm:w-32 text-left font-bold md:mb-3">Street:</label>
-                    <input
-                        type='text'
-                        name='street_address'
-                        id='street_address'
-                        value={formData.street_address}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="city" className="w-full sm:w-32 text-left font-bold md:mb-3">City:</label>
-                    <input
-                        type='text'
-                        name='city'
-                        id='city'
-                        value={formData.city}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="state" className="w-full sm:w-32 text-left font-bold md:mb-3">State:</label>
-                    <input
-                        type='text'
-                        name='state'
-                        id='state'
-                        value={formData.state}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="country" className="w-full sm:w-32 text-left font-bold md:mb-3">Country:</label>
-                    <input
-                        type='text'
-                        name='country'
-                        id='country'
-                        value={formData.country}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="telephone" className="w-full sm:w-32 text-left font-bold md:mb-3">Telephone:</label>
-                    <input
-                        type='tel'
-                        name='telephone'
-                        id='telephone'
-                        value={formData.telephone}
-                        pattern='[0-9]*'
-                        title='Please only enter numbers'
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4">
-                    <label htmlFor="email" className="w-full sm:w-32 text-left font-bold md:mb-3">Contact Email:</label>
-                    <input
-                        type='email'
-                        name='email'
-                        id='email'
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full sm:flex-1 border-2 border-gray-400 rounded-xs px-3 mb-3"
-                    />
-                </div>
-                <div className="flex flex-row justify-center my-8 space-x-4">
-                    <Button className="bg-sky-500 hover:bg-sky-700" type='submit' onClick={handleAddPatient}>Add</Button>
-                    <Button className="bg-sky-500 hover:bg-sky-700" type='submit' onClick={handleUpdatePatient}>Update</Button>
-                    <Button className="bg-sky-500 hover:bg-sky-700" type='button' onClick={handleCancel}>Cancel</Button>
-                </div>
-            </form>
-
-            {error ? <p className="text-red-500 font-bold">{error}</p> : ''}
-            {success ? <p className="text-green-600 font-bold">{success}</p> : ''}
-        </div >
-    )
-};
+        <div className="flex flex-row justify-center my-8 space-x-4">
+          <Button
+            className="bg-sky-500 hover:bg-sky-700"
+            type="submit"
+            onClick={(e) => handleSubmit(e, 'add')}
+          >
+            Add
+          </Button>
+          <Button
+            className="bg-sky-500 hover:bg-sky-700"
+            type="submit"
+            onClick={(e) => handleSubmit(e, 'update')}
+          >
+            Update
+          </Button>
+          <Button className="bg-sky-500 hover:bg-sky-700" type="button" onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
