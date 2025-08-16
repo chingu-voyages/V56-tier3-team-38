@@ -74,18 +74,38 @@ export function StatusTable() {
 
   /**
    * Realtime subscription:
-   * Re-fetch whenever patients table changes (INSERT/UPDATE/DELETE).
+   * Explicitly listen to INSERT/UPDATE/DELETE events on "patients".
    * Make sure Realtime is enabled for "patients" in Supabase dashboard.
    */
   useEffect(() => {
+    // Refetch helper used by all event handlers
+    const handleChange = async () => {
+      const data = await getActivePatientsForBoard();
+      setRows(data.map((d) => ({ id: d.id, status: d.status, name: d.name })));
+      setPage(0); // Reset to first page on any change
+    };
+
     const channel = supabase
-      .channel('public:patients')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'patients' }, async () => {
-        const data = await getActivePatientsForBoard();
-        setRows(data.map((d) => ({ id: d.id, status: d.status, name: d.name })));
-        setPage(0);
-      })
-      .subscribe();
+      .channel('patients-changes', { config: { broadcast: { self: false } } })
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'patients' },
+        handleChange
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'patients' },
+        handleChange
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'patients' },
+        handleChange
+      )
+      .subscribe((status) => {
+        // Helpful for debugging: expect "SUBSCRIBED" if connected
+        console.log('[realtime] patients channel status:', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
