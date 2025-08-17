@@ -5,17 +5,20 @@ import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/auth/auth'; // use session + logout
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [today, setToday] = useState('');
 
-  // These will eventually come from the auth system(Supabase)
-  const isAdmin = true; // Admins can access all screens
-  const isTeamMember = true; // Surgical team members can access everything except Patient Info
+  // Read role from our simple auth context (guest by default)
+  const { session, logout } = useAuth();
+  const role = session?.role ?? 'guest';
 
-  // Example patient ID (this should come from routing or context in a real app)
-  const patientId = '123';
+  // Role booleans matching the spec
+  const isAdmin = role === 'admin';
+  const isTeamMember = role === 'surgical';
+  const isStaff = isAdmin || isTeamMember; // staff can see Status Update; only admin sees Patient Info
 
   useEffect(() => {
     // Avoid hydration mismatch with locale-sensitive formatting
@@ -48,7 +51,7 @@ export default function Header() {
             Surgery Tracker
           </Link>
 
-          {/* Responsive Nav */}
+          {/* Responsive Nav (kept same structure; only role logic changed) */}
           <nav
             className={cn(
               'flex-col gap-2 hidden md:flex-row md:gap-8 md:justify-center md:items-center md:flex',
@@ -59,17 +62,36 @@ export default function Header() {
             <hr className="md:hidden border-gray-300" />
             <Link href="/patient">Patient Status</Link>
             <hr className="md:hidden border-gray-300" />
-            {(isAdmin || isTeamMember) && (
-              <Link href={`/patient/status-update`}>Patient Status Update</Link>
-            )}
+
+            {/* Staff-only: Status Update (admins + surgical team) */}
+            {isStaff && <Link href="/patient/status-update">Patient Status Update</Link>}
+
             <hr className="md:hidden border-gray-300" />
-            {isAdmin && <Link href={`/patient/info`}>Patient Information</Link>}
+
+            {/* Admin-only: Patient Information */}
+            {isAdmin && <Link href="/patient/info">Patient Information</Link>}
+
+            <hr className="md:hidden border-gray-300" />
+
+            {/* Auth action: show Login for guests, Logout for staff/admin */}
+            {role === 'guest' ? (
+              <Link href="/login">Login</Link>
+            ) : (
+              <button
+                type="button"
+                className="text-left md:text-inherit underline md:no-underline"
+                onClick={logout}
+                aria-label="Logout"
+              >
+                Logout
+              </button>
+            )}
           </nav>
 
-          {/* Right: Today's Date */}
+          {/* Right: Today's Date (unchanged) */}
           <div className="text-gray-600 text-sm">{today}</div>
         </div>
       </div>
-    </header >
+    </header>
   );
 }
