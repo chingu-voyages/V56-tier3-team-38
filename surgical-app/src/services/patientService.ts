@@ -153,18 +153,29 @@ export async function getPatientById(id: string): Promise<Patient | null> {
   return (data as Patient) ?? null;
 }
 
-// Returns the minimal dataset for the public status board.
-// - Excludes "Dismissal" because those patients should be removed from the display.
-// - Orders by creation time so the board cycles in a stable order.
-export async function getActivePatientsForDisplay() {
+// Active patients for the public board (exclude Dismissal)
+export type PatientListItem = {
+  id: string;
+  status: PatientStatus;
+  name: string;
+  created_at?: string | null;
+};
+
+export async function getActivePatientsForBoard(): Promise<PatientListItem[]> {
   const { data, error } = await supabase
     .from('patients')
-    .select('id, status')
+    .select('id, status, first_name, last_name, created_at')
     .neq('status', 'Dismissal')
     .order('created_at', { ascending: true });
 
   if (error) throw error;
-  return data as Pick<Patient, 'id' | 'status'>[];
+
+  return (data ?? []).map((p) => ({
+    id: p.id,
+    status: p.status as PatientStatus,
+    name: `${p.first_name ?? ''} ${p.last_name ?? ''}`.trim(),
+    created_at: p.created_at ?? null,
+  }));
 }
 
 // OPTIONAL: Returns full patient rows ordered by creation time (newest first).
