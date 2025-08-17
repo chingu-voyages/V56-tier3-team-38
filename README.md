@@ -1,40 +1,66 @@
-# voyage-tasks
+# Surgery Tracker
 
-Your project's `readme` is as important to success as your code. For
-this reason you should put as much care into its creation and maintenance
-as you would any other component of the application.
+<img  width="640" height="700" alt="Screenshot of homepage" src="https://github.com/user-attachments/assets/f3d381f1-7e8a-4bce-b942-888e16fed072"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img  width="340" height="500" alt="Screenshot of patient statuses" src="https://github.com/user-attachments/assets/50dfc066-e6cd-4200-b88d-c64526a5e44d"/>
 
-If you are unsure of what should go into the `readme` let this article,
-written by an experienced Chingu, be your starting point -
-[Keys to a well written README](https://tinyurl.com/yk3wubft).
+**Surgery Tracker** is a web application designed to help ease the stress of loved ones waiting during a patient’s surgery. The app allows surgery center personnel to collect patient information and update their progress throughout each phase of the procedure. This information can be displayed on a monitor in the waiting room, giving family and friends visibility into the surgery workflow and helping them stay informed and reassured.
 
-And before we go there's "one more thing"! Once you decide what to include
-in your `readme` feel free to replace the text we've provided here.
+# Key Features
+- Responsive website 
+- Staff Login/Logout 
+- Guests can view patient status updates 
+- Surgery Team Members can update surgery status
+- Admins can add/update patient information and surgery status
 
-> Own it & Make it your Own!
+# Built with
+- Frontend: React, Next.js, Tailwind CSS
+- Backend-as-a-Service / Database: Supabase
 
-## Team Documents
+# Setup
+1. Clone the project into local directory
+```
+https://github.com/chingu-voyages/V56-tier3-team-38.git
+```
+2. Navigate to surgical-app folder
+```
+cd surgical-app
+```
+3. Install dependencies
+```
+npm install
+```
+4. Create a .env.local file and include your own `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` Supabase credentials
+```
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+5. Create the `patients` table in the Supabase SQL Editor
 
-You may find these helpful as you work together to organize your project.
+```
+  create table patients (
+  id text not null,
+  first_name text not null,
+  last_name text not null,
+  street_address text not null,
+  city text not null,
+  state text not null,
+  country text not null,
+  telephone text not null,
+  email text not null,
+  status text not null default 'Checked In'::text,
+  created_at timestamp with time zone null default now(),
+  constraint patients_pkey primary key (id)
+) 
+```
 
-- [Team Project Ideas](./docs/team_project_ideas.md)
-- [Team Decision Log](./docs/team_decision_log.md)
+6. Start the server with the command below and open `http://localhost:3000` to view it in your browser
+```
+npm run dev
+```
 
-Meeting Agenda templates (located in the `/docs` directory in this repo):
+# Our Team
 
-- Meeting - Voyage Kickoff --> ./docs/meeting-voyage_kickoff.docx
-- Meeting - App Vision & Feature Planning --> ./docs/meeting-vision_and_feature_planning.docx
-- Meeting - Sprint Retrospective, Review, and Planning --> ./docs/meeting-sprint_retrospective_review_and_planning.docx
-- Meeting - Sprint Open Topic Session --> ./docs/meeting-sprint_open_topic_session.docx
-
-## Our Team
-
-Everyone on your team should add their name along with a link to their GitHub
-& optionally their LinkedIn profiles below. Do this in Sprint #1 to validate
-your repo access and to practice PR'ing with your team _before_ you start
-coding!
-
-- Tomoyuki Kishi #1: [GitHub](https://github.com/kishi1997) / [LinkedIn](https://linkedin.com/in/kishi-tomoyuki-287b39355/)
-- Johnny Kim #2: [GitHub](https://github.com/bellhwi) / [LinkedIn](https://www.linkedin.com/in/jonghwikim/)
-- Lisa Chan #3: [GitHub](https://github.com/lc1715) / [LinkedIn](http://www.linkedin.com/in/lisa-chan14)
-- Delanshia Hamilton #4: [GitHub](https://github.com/LanceHam) 
+- Tomoyuki Kishi: [GitHub](https://github.com/kishi1997) / [LinkedIn](https://linkedin.com/in/kishi-tomoyuki-287b39355/)
+- Johnny Kim: [GitHub](https://github.com/bellhwi) / [LinkedIn](https://www.linkedin.com/in/jonghwikim/)
+- Lisa Chan: [GitHub](https://github.com/lc1715) / [LinkedIn](http://www.linkedin.com/in/lisa-chan14)
+- Delanshia Hamilton: [GitHub](https://github.com/LanceHam) 
