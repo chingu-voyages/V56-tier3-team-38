@@ -13,7 +13,8 @@
 - Admins can add/update patient information and surgery status
 
 # Built with
-- Frontend: React, Next.js, Tailwind CSS
+- Language: TypeScript
+- Frontend: React, Next.js, Tailwind CSS, shadcn/ui 
 - Backend-as-a-Service / Database: Supabase
 
 # Setup
@@ -50,7 +51,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
   status text not null default 'Checked In'::text,
   created_at timestamp with time zone null default now(),
   constraint patients_pkey primary key (id)
-) 
+);
 ```
 
 6. Start the server with the command below and open `http://localhost:3000` to view it in your browser
