@@ -1,9 +1,9 @@
-# Surgery Tracker
+# Surgery Status Board
 
-<img  width="640" height="700" alt="Screenshot of homepage" src="https://github.com/user-attachments/assets/f3d381f1-7e8a-4bce-b942-888e16fed072"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<img width="1422" height="585" alt="Screenshot of homepage" src="https://github.com/user-attachments/assets/1cc9adf6-92ac-4c69-aa65-da4f06993b5c" />
 <img  width="340" height="500" alt="Screenshot of patient statuses" src="https://github.com/user-attachments/assets/50dfc066-e6cd-4200-b88d-c64526a5e44d"/>
 
-**Surgery Tracker** is a web application designed to help ease the stress of loved ones waiting during a patient’s surgery. The app allows surgery center personnel to collect patient information and update their progress throughout each phase of the procedure. This information can be displayed on a monitor in the waiting room, giving family and friends visibility into the surgery workflow and helping them stay informed and reassured.
+**Surgery Status Board** is a web application designed to help ease the stress of loved ones waiting during a patient’s surgery. The app allows surgery center personnel to collect patient information and update their progress throughout each phase of the procedure. This information can be displayed on a monitor in the waiting room, giving family and friends visibility into the surgery workflow and helping them stay informed and reassured.
 
 # Key Features
 - Responsive website 
