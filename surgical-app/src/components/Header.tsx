@@ -48,7 +48,7 @@ export default function Header() {
 
           {/* App Name */}
           <Link href="/" className="font-semibold text-lg">
-            Surgery Tracker
+            Surgery Status Board
           </Link>
 
           {/* Responsive Nav (kept same structure; only role logic changed) */}
